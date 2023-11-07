@@ -72,8 +72,13 @@ func main() {
 	router.Get("/{alias}", redirect.New(logger, storage))
 	logger.Info("starting server", slog.String("address", cfg.Address))
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		logger.Error("$PORT must be set")
+	}
+
 	srv := &http.Server{
-		Addr:         cfg.Address,
+		Addr:         cfg.Address + ":" + port,
 		Handler:      router,
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,

@@ -1,0 +1,36 @@
+name: Deploy to Heroku
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Heroku login
+        run: echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
+
+      - name: Set environment variables on Heroku
+        run: |
+          heroku config:set HTTP_SERVER_PASSWORD=${{ secrets.HTTP_SERVER_PASSWORD }} --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set CONFIG_PATH='/app/config/prod.yaml' --app ${{ secrets.HEROKU_APP_NAME }}
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: Deploy to Heroku
+        run: |
+          git push heroku ${{ github.event.inputs.tag }}:main
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
