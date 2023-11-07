@@ -16,22 +16,18 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag }}
 
-      - name: Install Heroku CLI
-        run: curl https://cli-assets.heroku.com/install.sh | sh
-
-      - name: Set environment variables on Heroku
+      - name: Set Heroku config vars
         run: |
-          heroku config:set HTTP_SERVER_PASSWORD=${{ secrets.HTTP_SERVER_PASSWORD }} --app ${{ secrets.HEROKU_APP_NAME }}
           heroku config:set CONFIG_PATH='/app/config/prod.yaml' --app ${{ secrets.HEROKU_APP_NAME }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
-      - name: Add Heroku remote
-        run: git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
-
       - name: Deploy to Heroku
-        run: |
-          git push heroku ${{ github.event.inputs.tag }}:main
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          usedocker: false
+          branch: ${{ github.event.inputs.tag }}
+          force: true
