@@ -33,4 +33,5 @@ jobs:
         run: |
           git push heroku ${{ github.event.inputs.tag }}:main
         env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
