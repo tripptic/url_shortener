@@ -1,1 +1,1 @@
-web: ./url-shortener
+web: ./bin/url-shortener
