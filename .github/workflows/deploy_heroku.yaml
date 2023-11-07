@@ -19,11 +19,6 @@ jobs:
       - name: Install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Heroku login
-        run: heroku login -i
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-
       - name: Set environment variables on Heroku
         run: |
           heroku config:set HTTP_SERVER_PASSWORD=${{ secrets.HTTP_SERVER_PASSWORD }} --app ${{ secrets.HEROKU_APP_NAME }}
